@@ -1,7 +1,9 @@
-import "@repo/ui/styles.css";
-import "./globals.css";
+import { ReduxProvider } from "@repo/store";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import type { ReactNode } from "react";
+import "@repo/ui/styles.css";
+import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -13,11 +15,13 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={geist.className}>{children}</body>
+      <body className={geist.className}>
+         <ReduxProvider>{children}</ReduxProvider>
+        </body>
     </html>
   );
 }
