@@ -1,4 +1,4 @@
-import { ReduxProvider } from "@repo/store";
+import { Providers } from "./provider";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import type { ReactNode } from "react";
@@ -20,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>
-         <ReduxProvider>{children}</ReduxProvider>
+           <Providers>
+          {children}
+        </Providers>
         </body>
     </html>
   );

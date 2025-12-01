@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export default function SigninPage() {
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
 
   async function handleSubmit(e: any) {
     e.preventDefault();
@@ -16,69 +17,81 @@ export default function SigninPage() {
       email: data.get("email"),
       password: data.get("password"),
       redirect: true,
-      callbackUrl: "/", // redirect after login
+      callbackUrl: "/",
     });
+  }
 
-    setLoading(false);
+  function handleOAuth(provider: string) {
+    setOauthLoading(provider);
+    signIn(provider, { redirect: true, callbackUrl: "/" });
   }
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-[#020617] overflow-hidden px-4">
-      
-      {/* Background blobs */}
+
+      {/* BG Effects */}
       <div className="absolute w-[700px] h-[700px] bg-purple-600/30 rounded-full blur-[200px] -top-40 -left-40 animate-pulse"></div>
       <div className="absolute w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[200px] bottom-0 right-0 animate-pulse delay-1000"></div>
-
-      {/* Grid lines */}
       <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(90deg,#fff_1px,transparent_1px),linear-gradient(#fff_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-
-      {/* Noise */}
       <div className="absolute inset-0 opacity-[0.14] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
-      {/* Card */}
+      {/* LOGIN CARD */}
       <div className="relative z-10 w-full max-w-md rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl p-10">
 
-        <h2 className="text-4xl font-extrabold text-center text-white tracking-wide mb-8">
+        <h2 className="text-4xl font-extrabold text-center text-white mb-6">
           Welcome Back 👋
         </h2>
-
         <p className="text-center text-gray-300 mb-6">Sign in to continue</p>
 
         {/* OAuth Buttons */}
         <div className="space-y-4">
 
-          {/* Google Login */}
+          {/* Google */}
           <button
-            onClick={() =>
-              signIn("google", {
-                redirect: true,
-                callbackUrl: "/",
-              })
-            }
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-lg bg-white text-black font-medium hover:bg-gray-100 transition-all shadow-md"
+            onClick={() => handleOAuth("google")}
+            disabled={!!oauthLoading}
+            className={`
+              w-full flex items-center justify-center gap-3 py-3
+              rounded-lg bg-white text-black font-medium shadow-md
+              hover:bg-gray-100 transition-all cursor-pointer
+              ${oauthLoading ? "opacity-50 cursor-not-allowed" : ""}
+            `}
           >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              className="w-5 h-5"
-            />
-            Continue with Google
+            {oauthLoading === "google" ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                Signing in with Google...
+              </div>
+            ) : (
+              <>
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" />
+                Continue with Google
+              </>
+            )}
           </button>
 
-          {/* GitHub Login */}
+          {/* GitHub */}
           <button
-            onClick={() =>
-              signIn("github", {
-                redirect: true,
-                callbackUrl: "/",
-              })
-            }
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-lg bg-[#0a0a0a] text-white font-medium hover:bg-black transition-all shadow-lg"
+            onClick={() => handleOAuth("github")}
+            disabled={!!oauthLoading}
+            className={`
+              w-full flex items-center justify-center gap-3 py-3
+              rounded-lg bg-[#0a0a0a] text-white font-medium shadow-lg
+              hover:bg-black transition-all cursor-pointer
+              ${oauthLoading ? "opacity-50 cursor-not-allowed" : ""}
+            `}
           >
-            <img
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
-              className="w-5 h-5 invert"
-            />
-            Continue with GitHub
+            {oauthLoading === "github" ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Signing in with GitHub...
+              </div>
+            ) : (
+              <>
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" className="w-5 h-5 invert" />
+                Continue with GitHub
+              </>
+            )}
           </button>
         </div>
 
@@ -89,7 +102,7 @@ export default function SigninPage() {
           <div className="h-px w-20 bg-gray-600"></div>
         </div>
 
-        {/* Credentials Login */}
+        {/* CREDENTIALS FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <input
             name="email"
@@ -110,11 +123,23 @@ export default function SigninPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:opacity-90 transition-all shadow-xl disabled:opacity-50"
+            className="
+              w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 
+              text-white font-semibold shadow-xl transition-all cursor-pointer
+              hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed
+            "
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Signing in...
+              </span>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
+
       </div>
     </div>
   );
