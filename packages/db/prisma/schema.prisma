@@ -19,7 +19,9 @@ model User {
   name      String?
   number    String?  @unique
   password  String?
-  auth_type String   // "Google" | "Github" | "Credentials"
+  auth_type String
+  OnRampTransaction OnRampTransaction[]
+  Balance           Balance[]
 }
 
 model Merchant {
@@ -27,4 +29,23 @@ model Merchant {
   email     String  @unique
   name      String?
   auth_type String   // "Google" | "Github"
+}
+
+model OnRampTransaction {
+  id        Int          @id @default(autoincrement())
+  status    String
+  token     String       @unique
+  provider  String
+  amount    Int
+  startTime DateTime
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id])
+}
+
+model Balance {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  amount Int
+  locked Int
+  user   User @relation(fields: [userId], references: [id])
 }

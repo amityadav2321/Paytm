@@ -6,19 +6,32 @@ import { useState } from "react";
 export default function SigninPage() {
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: any) {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     const data = new FormData(e.currentTarget);
 
-    await signIn("credentials", {
+    const res = await signIn("credentials", {
       email: data.get("email"),
       password: data.get("password"),
-      redirect: true,
+      redirect: false, // IMPORTANT
       callbackUrl: "/",
     });
+
+    setLoading(false);
+
+    if (res?.error) {
+      setError("Invalid email or password");
+      return;
+    }
+
+    if (res?.ok) {
+      window.location.href = "/";
+    }
   }
 
   function handleOAuth(provider: string) {
@@ -42,6 +55,13 @@ export default function SigninPage() {
           Welcome Back 👋
         </h2>
         <p className="text-center text-gray-300 mb-6">Sign in to continue</p>
+
+        {/* ERROR MESSAGE */}
+        {error && (
+          <div className="mb-4 text-red-300 bg-red-900/40 border border-red-600/40 p-3 rounded-lg text-sm text-center">
+            {error}
+          </div>
+        )}
 
         {/* OAuth Buttons */}
         <div className="space-y-4">
@@ -104,6 +124,7 @@ export default function SigninPage() {
 
         {/* CREDENTIALS FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
+
           <input
             name="email"
             type="email"

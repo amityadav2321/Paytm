@@ -108,6 +108,23 @@ exports.Prisma.MerchantScalarFieldEnum = {
   auth_type: 'auth_type'
 };
 
+exports.Prisma.OnRampTransactionScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  token: 'token',
+  provider: 'provider',
+  amount: 'amount',
+  startTime: 'startTime',
+  userId: 'userId'
+};
+
+exports.Prisma.BalanceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  amount: 'amount',
+  locked: 'locked'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -126,7 +143,9 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Merchant: 'Merchant'
+  Merchant: 'Merchant',
+  OnRampTransaction: 'OnRampTransaction',
+  Balance: 'Balance'
 };
 /**
  * Create the Client
@@ -136,10 +155,10 @@ const config = {
   "clientVersion": "7.0.1",
   "engineVersion": "f09f2815f091dbba658cdcd2264306d88bb5bda6",
   "activeProvider": "postgresql",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id        Int     @id @default(autoincrement())\n  email     String? @unique\n  name      String?\n  number    String? @unique\n  password  String?\n  auth_type String // \"Google\" | \"Github\" | \"Credentials\"\n}\n\nmodel Merchant {\n  id        Int     @id @default(autoincrement())\n  email     String  @unique\n  name      String?\n  auth_type String // \"Google\" | \"Github\"\n}\n"
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id                Int                 @id @default(autoincrement())\n  email             String?             @unique\n  name              String?\n  number            String?             @unique\n  password          String?\n  auth_type         String\n  OnRampTransaction OnRampTransaction[]\n  Balance           Balance[]\n}\n\nmodel Merchant {\n  id        Int     @id @default(autoincrement())\n  email     String  @unique\n  name      String?\n  auth_type String // \"Google\" | \"Github\"\n}\n\nmodel OnRampTransaction {\n  id        Int      @id @default(autoincrement())\n  status    String\n  token     String   @unique\n  provider  String\n  amount    Int\n  startTime DateTime\n  userId    Int\n  user      User     @relation(fields: [userId], references: [id])\n}\n\nmodel Balance {\n  id     Int  @id @default(autoincrement())\n  userId Int  @unique\n  amount Int\n  locked Int\n  user   User @relation(fields: [userId], references: [id])\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"auth_type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Merchant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"auth_type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"auth_type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"OnRampTransaction\",\"kind\":\"object\",\"type\":\"OnRampTransaction\",\"relationName\":\"OnRampTransactionToUser\"},{\"name\":\"Balance\",\"kind\":\"object\",\"type\":\"Balance\",\"relationName\":\"BalanceToUser\"}],\"dbName\":null},\"Merchant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"auth_type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"OnRampTransaction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"OnRampTransactionToUser\"}],\"dbName\":null},\"Balance\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"locked\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BalanceToUser\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
   getRuntime: async () => require('./query_compiler_bg.js'),
