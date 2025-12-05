@@ -25,6 +25,8 @@ jobs:
         file: ./docker/Dockerfile.user
         push: true
         tags: amit2005/ci-cd-learning  # Replace with your Docker Hub username and repository
+        build-args: |
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
 
     - name: Verify Pushed Image
       run: docker pull 100xdevs/web-app:latest  # Replace with your Docker Hub username and repository
